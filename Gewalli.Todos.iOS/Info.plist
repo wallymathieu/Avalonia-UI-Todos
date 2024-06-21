@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Gewalli.Todos</string>
+	<string>Todos</string>
 	<key>CFBundleIdentifier</key>
-	<string>companyName.Gewalli.Todos</string>
+	<string>Gewalli.Todos</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>

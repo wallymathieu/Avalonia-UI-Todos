@@ -23,7 +23,6 @@ public partial class App : Application
     
     public override async void OnFrameworkInitializationCompleted()
     {
-        Console.WriteLine(ApplicationLifetime?.GetType().FullName);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
@@ -68,9 +67,6 @@ public partial class App : Application
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();
-            }else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
-            {
-                
             }
         }
     }

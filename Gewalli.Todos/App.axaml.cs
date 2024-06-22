@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -22,6 +23,7 @@ public partial class App : Application
     
     public override async void OnFrameworkInitializationCompleted()
     {
+        Console.WriteLine(ApplicationLifetime?.GetType().FullName);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
@@ -31,6 +33,12 @@ public partial class App : Application
             
             // Listen to the ShutdownRequested-event
             desktop.ShutdownRequested += DesktopOnShutdownRequested;
+        }else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
+        {
+            singleView.MainView = new MainView
+            {
+                DataContext = _mainViewModel
+            };
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -60,6 +68,9 @@ public partial class App : Application
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();
+            }else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
+            {
+                
             }
         }
     }

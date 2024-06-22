@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Gewalli.Todos.Models;
+﻿using Gewalli.Todos.Models;
+using ReactiveUI;
 
 namespace Gewalli.Todos.ViewModels;
 
@@ -44,16 +44,21 @@ public partial class ToDoItemViewModel : ViewModelBase
 
     public bool IsChecked
     {
-        get { return _isChecked; }
-        set { SetProperty(ref _isChecked, value); }
+        get => _isChecked;
+        set => this.RaiseAndSetIfChanged(ref _isChecked, value);
     }
     
     /// <summary>
     /// Gets or sets the content of the to-do item
     /// </summary>
-    [ObservableProperty] 
     private string? _content;
-    
+
+    public string? Content
+    {
+        get => _content;
+        set => this.RaiseAndSetIfChanged(ref _content, value);
+    }
+
     /// <summary>
     /// Gets a ToDoItem of this ViewModel
     /// </summary>

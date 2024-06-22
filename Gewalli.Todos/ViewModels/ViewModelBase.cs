@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ReactiveUI;
 
 namespace Gewalli.Todos.ViewModels;
 
@@ -11,6 +11,6 @@ namespace Gewalli.Todos.ViewModels;
 /// <summary>
 /// A base class for all of our ViewModels.
 /// </summary>
-public class ViewModelBase : ObservableObject
+public class ViewModelBase : ReactiveObject
 {
 }

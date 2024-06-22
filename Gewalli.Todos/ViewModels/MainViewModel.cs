@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Gewalli.Todos.Models;
+using ReactiveUI;
 
 namespace Gewalli.Todos.ViewModels;
 
@@ -36,9 +35,10 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// This command is used to add a new Item to the List
     /// </summary>
-    [RelayCommand (CanExecute = nameof(CanAddItem))]
-    private void AddItem()
+    //[RelayCommand (CanExecute = nameof(CanAddItem))]
+    public void AddItem()
     {
+        if (!CanAddItem()) return;
         // Add a new item to the list
         ToDoItems.Add(new ToDoItemViewModel() {Content = NewItemContent});
         
@@ -49,9 +49,15 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// Gets or set the content for new Items to add. If this string is not empty, the AddItemCommand will be enabled automatically
     /// </summary>
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(AddItemCommand))] // This attribute will invalidate the command each time this property changes
+    //[ObservableProperty] 
+    //[NotifyCanExecuteChangedFor(nameof(AddItemCommand))] // This attribute will invalidate the command each time this property changes
     private string? _newItemContent;
+
+    public string? NewItemContent
+    {
+        get => _newItemContent;
+        set => this.RaiseAndSetIfChanged(ref _newItemContent,value);
+    }
 
     /// <summary>
     /// Returns if a new Item can be added. We require to have the NewItem some Text
@@ -64,8 +70,8 @@ public partial class MainViewModel : ViewModelBase
     /// Removes the given Item from the list
     /// </summary>
     /// <param name="item">the item to remove</param>
-    [RelayCommand]
-    private void RemoveItem(ToDoItemViewModel item)
+    //[RelayCommand]
+    public void RemoveItem(ToDoItemViewModel item)
     {
         // Remove the given item from the list
         ToDoItems.Remove(item);

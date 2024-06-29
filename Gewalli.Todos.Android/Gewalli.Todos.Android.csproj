@@ -4,8 +4,8 @@
     <TargetFramework>net8.0-android</TargetFramework>
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
-    <ApplicationId>gr.gewalli.todos</ApplicationId>
-    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationId>se.gewalli.todos</ApplicationId>
+    <ApplicationVersion>2</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>

@@ -39,7 +39,6 @@ public partial class ToDoItemViewModel : ViewModelBase
     /// Gets or sets the checked status of each item
     /// </summary>
     // NOTE: This property is made without source generator. Uncomment the line below to use the source generator
-    // [ObservableProperty] 
     private bool _isChecked;
 
     public bool IsChecked

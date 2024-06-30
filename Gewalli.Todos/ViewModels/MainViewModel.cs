@@ -35,7 +35,6 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// This command is used to add a new Item to the List
     /// </summary>
-    //[RelayCommand (CanExecute = nameof(CanAddItem))]
     public void AddItem()
     {
         if (!CanAddItem()) return;
@@ -49,8 +48,6 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// Gets or set the content for new Items to add. If this string is not empty, the AddItemCommand will be enabled automatically
     /// </summary>
-    //[ObservableProperty] 
-    //[NotifyCanExecuteChangedFor(nameof(AddItemCommand))] // This attribute will invalidate the command each time this property changes
     private string? _newItemContent;
 
     public string? NewItemContent

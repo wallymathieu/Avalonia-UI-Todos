@@ -14,7 +14,7 @@ public static class ToDoListFileService
 {
     // This is a hard coded path to the file. It may not be available on every platform. In your real world App you may 
     // want to make this configurable
-    private static string _jsonFileName = 
+    private static readonly string JsonFileName = 
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "Avalonia.SimpleToDoList", "MyToDoList.txt");
 
@@ -25,13 +25,11 @@ public static class ToDoListFileService
     public static async Task SaveToFileAsync(IEnumerable<ToDoItem> itemsToSave)
     {
         // Ensure all directories exists
-        Directory.CreateDirectory(Path.GetDirectoryName(_jsonFileName)!);
+        Directory.CreateDirectory(Path.GetDirectoryName(JsonFileName)!);
         
         // We use a FileStream to write all items to disc
-        using (var fs = File.Create(_jsonFileName))
-        {
-            await JsonSerializer.SerializeAsync(fs, itemsToSave);
-        }
+        await using var fs = File.Create(JsonFileName);
+        await JsonSerializer.SerializeAsync(fs, itemsToSave);
     }
 
     /// <summary>
@@ -43,10 +41,8 @@ public static class ToDoListFileService
         try
         {
             // We try to read the saved file and return the ToDoItemsList if successful
-            using (var fs = File.OpenRead(_jsonFileName))
-            {
-                return await JsonSerializer.DeserializeAsync<IEnumerable<ToDoItem>>(fs);
-            }
+            await using var fs = File.OpenRead(JsonFileName);
+            return await JsonSerializer.DeserializeAsync<IEnumerable<ToDoItem>>(fs);
         }
         catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
         {

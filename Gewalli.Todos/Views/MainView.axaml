@@ -11,13 +11,13 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-    <Grid RowDefinitions="Auto, *, Auto"
+    <Grid RowDefinitions="Auto, Auto, *"
           x:Name="Root">
 
         <!-- This is our title text block. We use Style.Classes to style it accordingly -->
         <TextBlock Text="My ToDo-List" Classes="h1" />
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="2">
             <!-- This ItemsControl show all added ToDoItems. -->
             <!-- It needs to be placed inside a ScrollViewer because other than a ListBox it has not its own -->
             <ItemsControl ItemsSource="{Binding ToDoItems}">
@@ -45,7 +45,7 @@
         </ScrollViewer>
 
         <!-- This TextBox can be used to add new ToDoItems -->
-        <TextBox Grid.Row="2"
+        <TextBox Grid.Row="1"
                  Text="{Binding NewItemContent}"
                  Watermark="Add a new Item">
             <TextBox.InnerRightContent>

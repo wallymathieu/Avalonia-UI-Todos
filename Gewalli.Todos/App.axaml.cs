@@ -23,21 +23,23 @@ public partial class App : Application
     
     public override async void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        switch (ApplicationLifetime)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = _mainViewModel // Remember to change this line to use our private reference to the MainViewModel
-            };
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = _mainViewModel // Remember to change this line to use our private reference to the MainViewModel
+                };
             
-            // Listen to the ShutdownRequested-event
-            desktop.ShutdownRequested += DesktopOnShutdownRequested;
-        }else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
-        {
-            singleView.MainView = new MainView
-            {
-                DataContext = _mainViewModel
-            };
+                // Listen to the ShutdownRequested-event
+                desktop.ShutdownRequested += DesktopOnShutdownRequested;
+                break;
+            case ISingleViewApplicationLifetime singleView:
+                singleView.MainView = new MainView
+                {
+                    DataContext = _mainViewModel
+                };
+                break;
         }
 
         base.OnFrameworkInitializationCompleted();

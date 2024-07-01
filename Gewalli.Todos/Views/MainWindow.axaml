@@ -38,7 +38,7 @@
                             <!-- Note how we use the Root-Grid to get the MainViewModel here. As we use compiled bindings we have to cast the DataContext -->
                             <!-- The command parameter is the local ToDoItemViewModel being processed --> 
                             <Button Grid.Column="1"
-                                    Command="{Binding #Root.((vm:MainViewModel)DataContext).RemoveItem}"
+                                    Command="{Binding #Root.((vm:MainViewModel)DataContext).RemoveTodoCommand}"
                                     CommandParameter="{Binding .}">
                                 <PathIcon Data="{DynamicResource DeleteIconData}"
                                           Height="15"
@@ -55,14 +55,14 @@
                  Text="{Binding NewItemContent}"
                  Watermark="Add a new Item">
             <TextBox.InnerRightContent>
-                <Button Command="{Binding AddItem}">
+                <Button Command="{Binding AddTodoCommand}">
                     <PathIcon Data="{DynamicResource AcceptIconData}"
                               Foreground="Green" />
                 </Button>
             </TextBox.InnerRightContent>
             <!-- KeyBindings allow us to define KeyGestures  -->
             <TextBox.KeyBindings>
-                <KeyBinding Gesture="Enter" Command="{Binding AddItem}" />
+                <KeyBinding Gesture="Enter" Command="{Binding AddTodoCommand}" />
             </TextBox.KeyBindings>
         </TextBox>
     </Grid>

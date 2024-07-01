@@ -3,14 +3,6 @@ using ReactiveUI;
 
 namespace Gewalli.Todos.ViewModels;
 
-/*   NOTE:
- *
- *   Please mind that this samples uses the CommunityToolkit.Mvvm package for the ViewModels. Feel free to use any other
- *   MVVM-Framework (like ReactiveUI or Prism) that suits your needs best.
- *
- */
-
-
 /// <summary>
 /// This is a ViewModel which represents a <see cref="ToDoItem"/>
 /// </summary>
@@ -64,10 +56,10 @@ public partial class ToDoItemViewModel : ViewModelBase
     /// <returns>The ToDoItem</returns>
     public ToDoItem GetToDoItem()
     {
-        return new ToDoItem()
+        return new ToDoItem
         {
-            IsChecked = this.IsChecked,
-            Content = this.Content
+            IsChecked = IsChecked,
+            Content = Content
         };
     }
 }

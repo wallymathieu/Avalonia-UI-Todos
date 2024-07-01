@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Gewalli.Todos.Models;
 using ReactiveUI;
@@ -19,28 +21,33 @@ public partial class MainViewModel : ViewModelBase
             ToDoItems = new ObservableCollection<ToDoItemViewModel>(new[]
             {
                 new ToDoItemViewModel() { Content = "Hello" },
-                new ToDoItemViewModel() { Content = "Avalonia", IsChecked = true}
+                new ToDoItemViewModel() { Content = "Avalonia", IsChecked = true }
             });
         }
+        var canAddItem = this.ObservableForProperty(vm => vm.NewItemContent)
+            .Select(change => !string.IsNullOrWhiteSpace(change.Value)).AsObservable();
+        AddTodoCommand = ReactiveCommand.Create(AddItem, canAddItem);
+        RemoveTodoCommand = ReactiveCommand.Create<ToDoItemViewModel>(RemoveItem);
     }
-    
+
+
     /// <summary>
     /// Gets a collection of <see cref="ToDoItem"/> which allows adding and removing items
     /// </summary>
     public ObservableCollection<ToDoItemViewModel> ToDoItems { get; } = new ObservableCollection<ToDoItemViewModel>();
 
-    
+
     // -- Adding new Items --
-    
     /// <summary>
     /// This command is used to add a new Item to the List
     /// </summary>
-    public void AddItem()
+    public ReactiveCommand<Unit, Unit> AddTodoCommand { get; }
+
+    private void AddItem()
     {
-        if (!CanAddItem()) return;
         // Add a new item to the list
-        ToDoItems.Add(new ToDoItemViewModel() {Content = NewItemContent});
-        
+        ToDoItems.Add(new ToDoItemViewModel { Content = NewItemContent });
+
         // reset the NewItemContent
         NewItemContent = null;
     }
@@ -53,22 +60,17 @@ public partial class MainViewModel : ViewModelBase
     public string? NewItemContent
     {
         get => _newItemContent;
-        set => this.RaiseAndSetIfChanged(ref _newItemContent,value);
+        set => this.RaiseAndSetIfChanged(ref _newItemContent, value);
     }
 
-    /// <summary>
-    /// Returns if a new Item can be added. We require to have the NewItem some Text
-    /// </summary>
-    private bool CanAddItem() => !string.IsNullOrWhiteSpace(NewItemContent);
-    
+
     // -- Removing Items --
-    
     /// <summary>
     /// Removes the given Item from the list
     /// </summary>
-    /// <param name="item">the item to remove</param>
-    //[RelayCommand]
-    public void RemoveItem(ToDoItemViewModel item)
+    public ReactiveCommand<ToDoItemViewModel, Unit> RemoveTodoCommand { get; }
+
+    private void RemoveItem(ToDoItemViewModel item)
     {
         // Remove the given item from the list
         ToDoItems.Remove(item);

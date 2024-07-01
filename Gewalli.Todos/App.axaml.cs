@@ -1,12 +1,20 @@
 using System;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using DynamicData;
+using DynamicData.Binding;
+using Gewalli.Todos.Infrastructure;
 using Gewalli.Todos.Services;
 using Gewalli.Todos.ViewModels;
 using Gewalli.Todos.Views;
+using ReactiveUI;
 
 namespace Gewalli.Todos;
 
@@ -20,57 +28,76 @@ public partial class App : Application
     // This is a reference to our MainViewModel which we use to save the list on shutdown. You can also use Dependency Injection 
     // in your App.
     private readonly MainViewModel _mainViewModel = new MainViewModel();
-    
+
     public override async void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        switch (ApplicationLifetime)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = _mainViewModel // Remember to change this line to use our private reference to the MainViewModel
-            };
-            
-            // Listen to the ShutdownRequested-event
-            desktop.ShutdownRequested += DesktopOnShutdownRequested;
-        }else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
-        {
-            singleView.MainView = new MainView
-            {
-                DataContext = _mainViewModel
-            };
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = _mainViewModel
+                };
+
+                // Listen to the ShutdownRequested-event
+                desktop.ShutdownRequested += DesktopOnShutdownRequested;
+                break;
+            case ISingleViewApplicationLifetime singleView:
+                singleView.MainView = new MainView
+                {
+                    DataContext = _mainViewModel
+                };
+                break;
         }
 
         base.OnFrameworkInitializationCompleted();
         
+        // Subscribe to changes in collection (invoke save items on task pool):
+        _mainViewModel.ToDoItems.ObserveCollectionChanged()
+            // we want to avoid getting to many changes at once 
+            // we throttle and then delay to capture a potential burst of changes
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .Delay(TimeSpan.FromMilliseconds(200))
+            .SubscribeOn(TaskPoolScheduler.Default)
+            .Subscribe((x) =>
+                {
+                    SaveItems().ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+        );
+        
         // Init the MainViewModel 
         await InitMainViewModelAsync();
     }
-    
-    
+
+
     // We want to save our ToDoList before we actually shutdown the App. As File I/O is async, we need to wait until file is closed 
     // before we can actually close this window
 
     private bool _canClose; // This flag is used to check if window is allowed to close
+
     private async void DesktopOnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
     {
         e.Cancel = !_canClose; // cancel closing event first time
 
-        if (!_canClose)
+        if (_canClose) return;
+        await SaveItems();
+
+        // Set _canClose to true and Close this Window again
+        _canClose = true;
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // To save the items, we map them to the ToDoItem-Model which is better suited for I/O operations
-            var itemsToSave = _mainViewModel.ToDoItems.Select(item => item.GetToDoItem());
-            
-            await ToDoListFileService.SaveToFileAsync(itemsToSave);
-            
-            // Set _canClose to true and Close this Window again
-            _canClose = true;
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown();
-            }
+            desktop.Shutdown();
         }
     }
-    
+
+    private async Task SaveItems()
+    {
+        // To save the items, we map them to the ToDoItem-Model which is better suited for I/O operations
+        var itemsToSave = _mainViewModel.ToDoItems.Select(item => item.GetToDoItem());
+
+        await ToDoListFileService.SaveToFileAsync(itemsToSave);
+    }
+
     // Optional: Load data from disc
     private async Task InitMainViewModelAsync()
     {
@@ -79,10 +106,8 @@ public partial class App : Application
 
         if (itemsLoaded is not null)
         {
-            foreach (var item in itemsLoaded)
-            {
-                _mainViewModel.ToDoItems.Add(new ToDoItemViewModel(item));
-            }
+            var toDoItemViewModels = from i in itemsLoaded select new ToDoItemViewModel(i);
+            _mainViewModel.ToDoItems.AddRange(toDoItemViewModels);
         }
     }
 }

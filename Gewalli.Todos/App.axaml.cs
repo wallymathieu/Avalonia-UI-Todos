@@ -49,24 +49,7 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
 
         // Subscribe to changes in collection (invoke save items on task pool):
-        var todoItemChanges =
-            _mainViewModel.ToDoItems.ObserveCollectionChanges()
-                // https://stackoverflow.com/questions/43710988/looking-for-a-more-declarative-rx-way-to-observe-when-the-item-properties-change
-                .Select(c =>
-                    _mainViewModel.ToDoItems
-                        .Select(item => item.Changed)
-                        .Merge())
-                .Switch()
-                .Select(c => c as object);
-        var todoCollectionChanges =
-            _mainViewModel.ToDoItems.ObserveCollectionChanges()
-                .Select(c => c as object);
-        // we want to combine changes from when you have changed an item and when you have changed the collection
-        var anyChanges = Observable.CombineLatest(todoItemChanges, todoCollectionChanges)
-            // we want to avoid getting to many changes at once 
-            // we throttle and then delay to capture a potential burst of changes
-            .Throttle(TimeSpan.FromMilliseconds(200))
-            .Delay(TimeSpan.FromMilliseconds(200))
+        ToDoChangeObserver.ObserveChangesInWindow(_mainViewModel.ToDoItems, TimeSpan.FromMilliseconds(200))
             .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe((x) => { SaveItems().ConfigureAwait(false).GetAwaiter().GetResult(); });
 

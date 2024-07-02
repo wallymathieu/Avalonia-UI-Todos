@@ -46,6 +46,7 @@
 
         <!-- This TextBox can be used to add new ToDoItems -->
         <TextBox Grid.Row="1"
+                 Name="NewTodo"
                  Text="{Binding NewItemContent}"
                  Watermark="Add a new Item">
             <TextBox.InnerRightContent>

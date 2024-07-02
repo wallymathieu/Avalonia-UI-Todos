@@ -2,10 +2,10 @@
 
 ## Stumbles
 
-- Google Play store can be daunting at first. You need to fill in a lot of documentation and render screenshots in exact sizes.
+- Google Play Store can be daunting at first. You need to fill in a lot of documentation and render screenshots in exact sizes.
 - The default version of this app uses a Grid with a textbox at the bottom. The virtual keyboard hides the bottom content, making it hard to enter anything. Testing your design is a must.
 - There is no shutdown event as seen in desktop apps, so you need to persist changes while the app is running.
-- Google Play store requires you to package as 'aab' instead of 'apk'. The 'aab' format is not used when debugging locally... Note the addition of release specific format in the csproj.
+- Google Play Store requires you to package as 'aab' instead of 'apk'. The 'aab' format is not used when debugging locally... Note the addition of release specific format in the csproj.
 
 ## Unrelated notes
 

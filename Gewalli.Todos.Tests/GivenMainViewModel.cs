@@ -12,19 +12,23 @@ public class GivenMainViewModel
     [Fact]
     public async Task CanAddNewToDo()
     {
-        _viewModel.NewItemContent = InputText;
-        await _viewModel.AddTodoCommand.Execute();
-        var todoItem = Assert.Single(_viewModel.ToDoItems);
+        var todoItem = await CreateToDo();
         Assert.Equal(InputText, todoItem.Content);
     }
-    
+
     [Fact]
     public async Task CanAddAndRemoveNewToDo()
+    {
+        var todoItem = await CreateToDo();
+        await _viewModel.RemoveTodoCommand.Execute(todoItem);
+        Assert.Empty(_viewModel.ToDoItems);
+    }
+
+    private async Task<ToDoItemViewModel> CreateToDo()
     {
         _viewModel.NewItemContent = InputText;
         await _viewModel.AddTodoCommand.Execute();
         var todoItem = Assert.Single(_viewModel.ToDoItems);
-        await _viewModel.RemoveTodoCommand.Execute(todoItem);
-        Assert.Empty(_viewModel.ToDoItems);
+        return todoItem;
     }
 }

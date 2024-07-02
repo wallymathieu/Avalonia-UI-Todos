@@ -47,7 +47,7 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
-
+        // Another way could potentially be to use something inspired by : https://www.reactiveui.net/docs/handbook/data-persistence.html
         // Subscribe to changes in collection (invoke save items on task pool):
         ToDoChangeObserver.ObserveChangesInWindow(_mainViewModel.ToDoItems, TimeSpan.FromMilliseconds(200))
             .SubscribeOn(TaskPoolScheduler.Default)

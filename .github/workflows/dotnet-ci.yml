@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+    - release/*
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest] # ubuntu-latest, macos-latest
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+    - name: Install wasm-tools, ios, android
+      run: dotnet workload install wasm-tools ios android
+    - name: Build Release
+      run: dotnet build --configuration Release
+    - name: Test Release
+      run: dotnet test --configuration Release
